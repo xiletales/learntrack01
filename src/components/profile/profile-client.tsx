@@ -206,6 +206,7 @@ export function ProfileClient({ role, profile, extended, grades = [] }: Props) {
             ) : (
               <>
                 <Input label="NIP" value={(form.nip as string) || ""} readOnly />
+                <Input label="Username" value={(form.username as string) || ""} readOnly />
                 <Input label="Major" value={(form.jurusan as string) || ""} onChange={f("jurusan")} as={editing ? "select" : "input"} options={["MIPA", "IPS"]} readOnly={!editing} />
                 <Input label="Class Handled" value={(form.class_handled as string) || ""} onChange={f("class_handled")} as={editing ? "select" : "input"} options={classOptions} readOnly={!editing} />
               </>
