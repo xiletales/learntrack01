@@ -143,7 +143,6 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
         <>
           <div
             className="fixed left-0 top-0 z-50 flex flex-col transition-all duration-300" style={{ width: sidebarWidth, height: "100vh" }}
-            style={{ width: sidebarWidth }}
           >
             <NavContent />
           </div>
