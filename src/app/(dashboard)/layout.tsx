@@ -40,7 +40,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-green-50/30">
+    <div className="flex min-h-screen h-full bg-green-50/30">
       <Sidebar
         role={profile.role}
         userName={profile.name}
