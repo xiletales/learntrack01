@@ -47,7 +47,7 @@ export default async function DashboardLayout({
         userSubtitle={subtitle}
         photoUrl={profile.photo_url}
       />
-      <main className="flex-1 p-8 min-h-screen">{children}</main>
+      <main className="flex-1 p-4 md:p-8 min-h-screen">{children}</main>
     </div>
   );
 }

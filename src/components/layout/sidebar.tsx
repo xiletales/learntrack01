@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, TrendingUp, Activity, BookOpen, User, Users,
-  Upload, MessageSquare, LogOut, Menu, ChevronRight, UserPlus,
+  Upload, MessageSquare, LogOut, Menu, ChevronRight, UserPlus, X,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Modal } from "@/components/ui/modal";
@@ -38,108 +38,172 @@ interface SidebarProps {
 
 export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const pathname = usePathname();
 
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   const items = role === "student" ? studentMenu : teacherMenu;
 
-  return (
-    <>
-      <div
-        className="fixed left-0 top-0 z-50 flex flex-col min-h-screen transition-all duration-300"
-        style={{
-          width: collapsed ? 64 : 230,
-          background: "#1a4d1f",
-        }}
-      >
-        {/* Logo */}
-        <div className="px-3.5 py-4 flex items-center gap-2.5 border-b border-white/[0.08]">
-          <Logo size={36} />
-          {!collapsed && (
-            <span className="text-white text-lg font-extrabold tracking-tight">
-              LearnTrack
-            </span>
-          )}
+  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <div
+      className="flex flex-col h-full"
+      style={{ background: "#1a4d1f" }}
+    >
+      {/* Logo */}
+      <div className="px-3.5 py-4 flex items-center gap-2.5 border-b border-white/[0.08]">
+        <Logo size={36} />
+        {(!collapsed || isMobile) && (
+          <span className="text-white text-lg font-extrabold tracking-tight">
+            LearnTrack
+          </span>
+        )}
+        {isMobile ? (
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="ml-auto bg-transparent border-none text-white/60 cursor-pointer p-1"
+          >
+            <X size={18} />
+          </button>
+        ) : (
           <button
             onClick={() => setCollapsed((c) => !c)}
             className="ml-auto bg-transparent border-none text-white/60 cursor-pointer p-1"
           >
             {collapsed ? <ChevronRight size={16} /> : <Menu size={16} />}
           </button>
-        </div>
-
-        {/* User */}
-        {!collapsed && (
-          <div className="px-4 py-3.5 border-b border-white/[0.08] flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
-              {photoUrl ? (
-                <img src={photoUrl} alt="" className="w-full h-full object-cover" />
-              ) : (
-                userName.charAt(0)
-              )}
-            </div>
-            <div className="overflow-hidden">
-              <div className="text-white text-[13px] font-semibold truncate">
-                {userName}
-              </div>
-              <div className="text-emerald-300 text-[11px]">{userSubtitle}</div>
-            </div>
-          </div>
         )}
-
-        {/* Nav */}
-        <nav className="flex-1 p-2 overflow-y-auto">
-          {items.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`w-full flex items-center gap-2.5 rounded-[10px] mb-0.5 no-underline transition-all duration-150 ${
-                  collapsed ? "px-3.5 py-2.5" : "px-3 py-2.5"
-                } ${
-                  active
-                    ? "bg-white/15 text-white font-semibold"
-                    : "text-white/65 hover:bg-white/10"
-                }`}
-                title={collapsed ? item.label : undefined}
-              >
-                <span
-                  className={`shrink-0 flex items-center ${
-                    active ? "text-emerald-300" : "text-white/55"
-                  }`}
-                >
-                  {item.icon}
-                </span>
-                {!collapsed && (
-                  <span className="text-[13px]">{item.label}</span>
-                )}
-                {!collapsed && active && (
-                  <ChevronRight size={13} className="ml-auto" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Logout */}
-        <div className="p-2 border-t border-white/[0.08]">
-          <button
-            onClick={() => setShowLogout(true)}
-            className="w-full flex items-center gap-2.5 rounded-[10px] bg-transparent border-none cursor-pointer text-white/55 text-[13px] px-3 py-2.5 hover:bg-white/10 transition-all"
-            title={collapsed ? "Logout" : undefined}
-          >
-            <LogOut size={18} className="shrink-0" />
-            {!collapsed && "Logout"}
-          </button>
-        </div>
       </div>
 
-      {/* Spacer */}
+      {/* User */}
+      {(!collapsed || isMobile) && (
+        <div className="px-4 py-3.5 border-b border-white/[0.08] flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
+            {photoUrl ? (
+              <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+            ) : (
+              userName.charAt(0)
+            )}
+          </div>
+          <div className="overflow-hidden">
+            <div className="text-white text-[13px] font-semibold truncate">
+              {userName}
+            </div>
+            <div className="text-emerald-300 text-[11px]">{userSubtitle}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Nav */}
+      <nav className="flex-1 p-2 overflow-y-auto">
+        {items.map((item) => {
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`w-full flex items-center gap-2.5 rounded-[10px] mb-0.5 no-underline transition-all duration-150 ${
+                collapsed && !isMobile ? "px-3.5 py-2.5" : "px-3 py-2.5"
+              } ${
+                active
+                  ? "bg-white/15 text-white font-semibold"
+                  : "text-white/65 hover:bg-white/10"
+              }`}
+              title={collapsed && !isMobile ? item.label : undefined}
+            >
+              <span className={`shrink-0 flex items-center ${active ? "text-emerald-300" : "text-white/55"}`}>
+                {item.icon}
+              </span>
+              {(!collapsed || isMobile) && (
+                <span className="text-[13px]">{item.label}</span>
+              )}
+              {(!collapsed || isMobile) && active && (
+                <ChevronRight size={13} className="ml-auto" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Logout */}
+      <div className="p-2 border-t border-white/[0.08]">
+        <button
+          onClick={() => setShowLogout(true)}
+          className="w-full flex items-center gap-2.5 rounded-[10px] bg-transparent border-none cursor-pointer text-white/55 text-[13px] px-3 py-2.5 hover:bg-white/10 transition-all"
+          title={collapsed && !isMobile ? "Logout" : undefined}
+        >
+          <LogOut size={18} className="shrink-0" />
+          {(!collapsed || isMobile) && "Logout"}
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* ── DESKTOP sidebar (hidden on mobile) ── */}
       <div
-        className="shrink-0 transition-all duration-300"
+        className="hidden md:flex flex-col fixed left-0 top-0 z-50 min-h-screen transition-all duration-300"
+        style={{ width: collapsed ? 64 : 230 }}
+      >
+        <SidebarContent />
+      </div>
+
+      {/* Desktop spacer */}
+      <div
+        className="hidden md:block shrink-0 transition-all duration-300"
         style={{ width: collapsed ? 64 : 230 }}
       />
+
+      {/* ── MOBILE top bar (hidden on desktop) ── */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3 border-b border-white/10"
+        style={{ background: "#1a4d1f" }}
+      >
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center"
+        >
+          <Menu size={22} />
+        </button>
+        <Logo size={28} />
+        <span className="text-white text-base font-extrabold tracking-tight">LearnTrack</span>
+      </div>
+
+      {/* Mobile top bar spacer */}
+      <div className="md:hidden h-[52px] shrink-0" />
+
+      {/* ── MOBILE drawer overlay ── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-50 flex"
+          onClick={() => setMobileOpen(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50" />
+
+          {/* Drawer */}
+          <div
+            className="relative z-10 w-[260px] h-full flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <SidebarContent isMobile />
+          </div>
+        </div>
+      )}
 
       {/* Logout Modal */}
       <Modal open={showLogout} onClose={() => setShowLogout(false)}>
