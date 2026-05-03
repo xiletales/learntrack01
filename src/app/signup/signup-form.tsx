@@ -22,7 +22,6 @@ export function SignUpForm() {
     confirmPassword: "",
     gender: "",
     school: "",
-    nip: "",
     class_handled: "",
     phone: "",
     email: "",
@@ -56,7 +55,6 @@ export function SignUpForm() {
     formData.set("gender", form.gender);
     formData.set("school", form.school);
     formData.set("school_year", "");
-    formData.set("nip", form.nip);
     formData.set("email", form.email);
     formData.set("subject", "");
     formData.set("class_handled", form.class_handled);
@@ -110,23 +108,14 @@ export function SignUpForm() {
           required
         />
 
-        <div className="grid grid-cols-2 gap-x-4">
-          <Input
-            label="NIP"
-            value={form.nip}
-            onChange={f("nip")}
-            placeholder="National Teacher ID"
-            required
-          />
-          <Input
-            label="Email"
-            value={form.email}
-            onChange={f("email")}
-            type="email"
-            placeholder="your@email.com"
-            required
-          />
-        </div>
+        <Input
+          label="Email"
+          value={form.email}
+          onChange={f("email")}
+          type="email"
+          placeholder="your@email.com"
+          required
+        />
 
         <div className="grid grid-cols-2 gap-x-4">
           <Input
@@ -149,7 +138,7 @@ export function SignUpForm() {
             label="School"
             value={form.school}
             onChange={f("school")}
-            placeholder="e.g. SMA Negeri 1 Sragen"
+            placeholder="e.g. SMA Negeri 1 Malang"
           />
           <Input
             label="Class Handled"
@@ -210,7 +199,7 @@ export function SignUpForm() {
           </div>
         </div>
 
-        {/* Terms and Conditions — all gray, no bold */}
+        {/* Terms and Conditions */}
         <div className="mb-4 flex items-start gap-2.5">
           <input
             type="checkbox"
