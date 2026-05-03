@@ -40,7 +40,16 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
+
+  // Detect mobile properly using JS (more reliable than CSS breakpoints)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -49,66 +58,46 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
 
   // Prevent body scroll when mobile drawer is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
   const items = role === "student" ? studentMenu : teacherMenu;
+  const sidebarWidth = collapsed ? 64 : 230;
 
-  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <div
-      className="flex flex-col h-full"
-      style={{ background: "#1a4d1f" }}
-    >
-      {/* Logo */}
+  const NavContent = ({ mobile = false }: { mobile?: boolean }) => (
+    <div className="flex flex-col h-full" style={{ background: "#1a4d1f" }}>
+      {/* Logo row */}
       <div className="px-3.5 py-4 flex items-center gap-2.5 border-b border-white/[0.08]">
         <Logo size={36} />
-        {(!collapsed || isMobile) && (
-          <span className="text-white text-lg font-extrabold tracking-tight">
-            LearnTrack
-          </span>
+        {(!collapsed || mobile) && (
+          <span className="text-white text-lg font-extrabold tracking-tight">LearnTrack</span>
         )}
-        {isMobile ? (
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="ml-auto bg-transparent border-none text-white/60 cursor-pointer p-1"
-          >
-            <X size={18} />
-          </button>
-        ) : (
-          <button
-            onClick={() => setCollapsed((c) => !c)}
-            className="ml-auto bg-transparent border-none text-white/60 cursor-pointer p-1"
-          >
-            {collapsed ? <ChevronRight size={16} /> : <Menu size={16} />}
-          </button>
-        )}
+        <button
+          onClick={() => mobile ? setMobileOpen(false) : setCollapsed(c => !c)}
+          className="ml-auto bg-transparent border-none text-white/60 cursor-pointer p-1"
+        >
+          {mobile ? <X size={18} /> : collapsed ? <ChevronRight size={16} /> : <Menu size={16} />}
+        </button>
       </div>
 
-      {/* User */}
-      {(!collapsed || isMobile) && (
+      {/* User info */}
+      {(!collapsed || mobile) && (
         <div className="px-4 py-3.5 border-b border-white/[0.08] flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-sm shrink-0 overflow-hidden">
-            {photoUrl ? (
-              <img src={photoUrl} alt="" className="w-full h-full object-cover" />
-            ) : (
-              userName.charAt(0)
-            )}
+            {photoUrl
+              ? <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+              : userName.charAt(0)
+            }
           </div>
           <div className="overflow-hidden">
-            <div className="text-white text-[13px] font-semibold truncate">
-              {userName}
-            </div>
+            <div className="text-white text-[13px] font-semibold truncate">{userName}</div>
             <div className="text-emerald-300 text-[11px]">{userSubtitle}</div>
           </div>
         </div>
       )}
 
-      {/* Nav */}
+      {/* Nav links */}
       <nav className="flex-1 p-2 overflow-y-auto">
         {items.map((item) => {
           const active = pathname === item.href;
@@ -116,24 +105,16 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
             <Link
               key={item.href}
               href={item.href}
+              title={collapsed && !mobile ? item.label : undefined}
               className={`w-full flex items-center gap-2.5 rounded-[10px] mb-0.5 no-underline transition-all duration-150 ${
-                collapsed && !isMobile ? "px-3.5 py-2.5" : "px-3 py-2.5"
-              } ${
-                active
-                  ? "bg-white/15 text-white font-semibold"
-                  : "text-white/65 hover:bg-white/10"
-              }`}
-              title={collapsed && !isMobile ? item.label : undefined}
+                collapsed && !mobile ? "px-3.5 py-2.5 justify-center" : "px-3 py-2.5"
+              } ${active ? "bg-white/15 text-white font-semibold" : "text-white/65 hover:bg-white/10"}`}
             >
               <span className={`shrink-0 flex items-center ${active ? "text-emerald-300" : "text-white/55"}`}>
                 {item.icon}
               </span>
-              {(!collapsed || isMobile) && (
-                <span className="text-[13px]">{item.label}</span>
-              )}
-              {(!collapsed || isMobile) && active && (
-                <ChevronRight size={13} className="ml-auto" />
-              )}
+              {(!collapsed || mobile) && <span className="text-[13px]">{item.label}</span>}
+              {(!collapsed || mobile) && active && <ChevronRight size={13} className="ml-auto" />}
             </Link>
           );
         })}
@@ -143,11 +124,13 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
       <div className="p-2 border-t border-white/[0.08]">
         <button
           onClick={() => setShowLogout(true)}
-          className="w-full flex items-center gap-2.5 rounded-[10px] bg-transparent border-none cursor-pointer text-white/55 text-[13px] px-3 py-2.5 hover:bg-white/10 transition-all"
-          title={collapsed && !isMobile ? "Logout" : undefined}
+          title={collapsed && !mobile ? "Logout" : undefined}
+          className={`w-full flex items-center gap-2.5 rounded-[10px] bg-transparent border-none cursor-pointer text-white/55 text-[13px] px-3 py-2.5 hover:bg-white/10 transition-all ${
+            collapsed && !mobile ? "justify-center" : ""
+          }`}
         >
           <LogOut size={18} className="shrink-0" />
-          {(!collapsed || isMobile) && "Logout"}
+          {(!collapsed || mobile) && "Logout"}
         </button>
       </div>
     </div>
@@ -155,57 +138,57 @@ export function Sidebar({ role, userName, userSubtitle, photoUrl }: SidebarProps
 
   return (
     <>
-      {/* ── DESKTOP sidebar (hidden on mobile) ── */}
-      <div
-        className="hidden md:flex flex-col fixed left-0 top-0 z-50 min-h-screen transition-all duration-300"
-        style={{ width: collapsed ? 64 : 230 }}
-      >
-        <SidebarContent />
-      </div>
-
-      {/* Desktop spacer */}
-      <div
-        className="hidden md:block shrink-0 transition-all duration-300"
-        style={{ width: collapsed ? 64 : 230 }}
-      />
-
-      {/* ── MOBILE top bar (hidden on desktop) ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3 border-b border-white/10"
-        style={{ background: "#1a4d1f" }}
-      >
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center"
-        >
-          <Menu size={22} />
-        </button>
-        <Logo size={28} />
-        <span className="text-white text-base font-extrabold tracking-tight">LearnTrack</span>
-      </div>
-
-      {/* Mobile top bar spacer */}
-      <div className="md:hidden h-[52px] shrink-0" />
-
-      {/* ── MOBILE drawer overlay ── */}
-      {mobileOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-50 flex"
-          onClick={() => setMobileOpen(false)}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50" />
-
-          {/* Drawer */}
+      {/* ── DESKTOP sidebar ── */}
+      {!isMobile && (
+        <>
           <div
-            className="relative z-10 w-[260px] h-full flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed left-0 top-0 z-50 flex flex-col min-h-screen transition-all duration-300"
+            style={{ width: sidebarWidth }}
           >
-            <SidebarContent isMobile />
+            <NavContent />
+          </div>
+          {/* Spacer so content doesn't go under sidebar */}
+          <div className="shrink-0 transition-all duration-300" style={{ width: sidebarWidth }} />
+        </>
+      )}
+
+      {/* ── MOBILE top bar ── */}
+      {isMobile && (
+        <>
+          <div
+            className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3 border-b border-white/10"
+            style={{ background: "#1a4d1f" }}
+          >
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center"
+            >
+              <Menu size={22} />
+            </button>
+            <Logo size={28} />
+            <span className="text-white text-base font-extrabold tracking-tight">LearnTrack</span>
+          </div>
+          {/* Spacer for top bar height */}
+          <div className="h-[52px] shrink-0" />
+        </>
+      )}
+
+      {/* ── MOBILE drawer ── */}
+      {isMobile && mobileOpen && (
+        <div className="fixed inset-0 z-[100] flex">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Drawer panel */}
+          <div className="relative z-10 w-[260px] max-w-[80vw] h-full flex flex-col shadow-2xl">
+            <NavContent mobile />
           </div>
         </div>
       )}
 
-      {/* Logout Modal */}
+      {/* Logout modal */}
       <Modal open={showLogout} onClose={() => setShowLogout(false)}>
         <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
           <LogOut size={26} className="text-red-400" />
