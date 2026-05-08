@@ -51,7 +51,7 @@ export function HomeContent() {
         <div className="absolute top-[10%] right-[8%] w-[340px] h-[340px] rounded-full bg-emerald-500/20 blur-[60px] pointer-events-none" />
         <div className="absolute bottom-[15%] right-[25%] w-[200px] h-[200px] rounded-full bg-emerald-300/10 blur-[40px] pointer-events-none" />
 
-        <div className="max-w-[1200px] mx-auto px-12 py-20 relative z-10 w-full">
+        <div className="px-12 py-20 relative z-10 w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -100,7 +100,7 @@ export function HomeContent() {
 
       {/* Features */}
       <div className="bg-green-50/50 py-20">
-        <div className="max-w-[1200px] mx-auto px-12">
+        <div className="px-12">
           <motion.div
             className="mb-12"
             initial={{ opacity: 0, y: 20 }}

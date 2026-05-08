@@ -9,7 +9,7 @@ export function PublicNav() {
 
   return (
     <nav className="bg-white sticky top-0 z-50 border-b border-emerald-200">
-      <div className="max-w-[1200px] mx-auto px-8 flex items-center h-16">
+      <div className="px-8 flex items-center h-16">
         <Link
           href="/"
           className="flex items-center gap-2.5 no-underline"

@@ -58,7 +58,7 @@ export function AboutContent() {
         />
         <div className="absolute top-[20%] right-[10%] w-[280px] h-[280px] rounded-full bg-emerald-500/15 blur-[50px] pointer-events-none" />
         <motion.div
-          className="max-w-[1200px] mx-auto relative z-10"
+          className="relative z-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -77,7 +77,7 @@ export function AboutContent() {
       </div>
 
       <div className="bg-green-50/50 py-18">
-        <div className="max-w-[1200px] mx-auto px-12">
+        <div className="px-12">
           {/* Who It's For */}
           <div className="mb-18">
             <div className="mb-9">
