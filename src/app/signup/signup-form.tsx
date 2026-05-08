@@ -18,6 +18,7 @@ export function SignUpForm() {
   const [form, setForm] = useState({
     name: "",
     username: "",
+    nip: "",
     password: "",
     confirmPassword: "",
     gender: "",
@@ -51,6 +52,7 @@ export function SignUpForm() {
     formData.set("role", "teacher");
     formData.set("name", form.name);
     formData.set("username", form.username);
+    formData.set("nip", form.nip);
     formData.set("password", form.password);
     formData.set("gender", form.gender);
     formData.set("school", form.school);
@@ -108,14 +110,23 @@ export function SignUpForm() {
           required
         />
 
-        <Input
-          label="Email"
-          value={form.email}
-          onChange={f("email")}
-          type="email"
-          placeholder="your@email.com"
-          required
-        />
+        <div className="grid grid-cols-2 gap-x-4">
+          <Input
+            label="NIP"
+            value={form.nip}
+            onChange={f("nip")}
+            placeholder="Enter your NIP"
+            required
+          />
+          <Input
+            label="Email"
+            value={form.email}
+            onChange={f("email")}
+            type="email"
+            placeholder="your@email.com"
+            required
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-x-4">
           <Input

@@ -23,6 +23,7 @@ export interface Student {
 
 export interface Teacher {
   id: string;
+  nip: string | null;
   jurusan: string | null;
   class_handled: string | null;
   subject: string | null;
@@ -81,6 +82,7 @@ export interface StudentWithData {
 
 export interface TeacherProfile {
   id: string;
+  nip: string | null;
   jurusan: string | null;
   class_handled: string | null;
   subject: string | null;
@@ -110,8 +112,8 @@ export const SUBJECT_KEYS = [
 export type SubjectKey = (typeof SUBJECT_KEYS)[number];
 
 export const SUBJECT_LABELS: Record<SubjectKey, string> = {
-  matematika_umum: "Gen. Math",
-  matematika_peminatan: "Spec. Math",
+  matematika_umum: "PKN",
+  matematika_peminatan: "Mathematics",
   bahasa_indonesia: "Indonesian",
   bahasa_inggris: "English",
   fisika: "Physics",
@@ -124,8 +126,8 @@ export const SUBJECT_LABELS: Record<SubjectKey, string> = {
 };
 
 export const SUBJECT_LABELS_FULL: Record<SubjectKey, string> = {
-  matematika_umum: "General Mathematics",
-  matematika_peminatan: "Specialized Mathematics",
+  matematika_umum: "PKN",
+  matematika_peminatan: "Mathematics",
   bahasa_indonesia: "Indonesian Language",
   bahasa_inggris: "English Language",
   fisika: "Physics",

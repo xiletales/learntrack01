@@ -8,6 +8,7 @@ export async function signUp(formData: FormData) {
 
   const name = formData.get("name") as string;
   const username = formData.get("username") as string;
+  const nip = formData.get("nip") as string;
   const password = formData.get("password") as string;
   const gender = formData.get("gender") as string;
   const school = formData.get("school") as string;
@@ -20,6 +21,7 @@ export async function signUp(formData: FormData) {
   if (password.length < 6) return { error: "Password must be at least 6 characters." };
   if (!email) return { error: "Email is required." };
   if (!username) return { error: "Username is required." };
+  if (!nip) return { error: "NIP is required." };
 
   // Validasi format username
   if (!/^[a-z0-9_]+$/.test(username)) {
@@ -64,6 +66,7 @@ export async function signUp(formData: FormData) {
 
   const { error: teacherError } = await supabase.from("teachers").insert({
     id: userId,
+    nip,
     class_handled: classHandled || null,
     phone: phone || null,
     email: email || null,
@@ -71,5 +74,5 @@ export async function signUp(formData: FormData) {
 
   if (teacherError) return { error: teacherError.message };
 
-  redirect("/teacher/dashboard");
+  redirect("/login?registered=true");
 }

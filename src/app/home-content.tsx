@@ -27,7 +27,7 @@ export function HomeContent() {
     <>
       {/* Hero */}
       <div
-        className="min-h-[92vh] flex items-center relative overflow-hidden"
+        className="w-full min-h-[92vh] flex items-center relative overflow-hidden"
         style={{ background: "#2a7030" }}
       >
         {/* Grid pattern */}
